@@ -1,0 +1,187 @@
+---
+# tasks file for os_debian
+
+- name: Get hostname from inventory hostname
+  set_fact:
+    ansible_hostname: "{{ inventory_hostname.split('.')[0] }}"
+  tags:
+    - baseos
+    - hosts
+
+- name: Get domain name from inventory hostname
+  set_fact:
+    ansible_domain: '{{ inventory_hostname | regex_replace("^[^.]+.", "")  }}'
+  tags:
+    - baseos
+    - hosts
+
+- name: Set hostname
+  shell: hostname "{{ ansible_hostname }}"
+  tags:
+    - baseos
+    - hostname
+
+- name: Set hostname file
+  shell: echo "{{ ansible_hostname }}" > /etc/hostname
+  tags:
+    - baseos
+    - hostname
+
+- name: Update /etc/hosts
+  template:
+    src: "hosts.j2"
+    dest: "/etc/hosts"
+  tags:
+    - baseos
+    - hosts
+
+- name: Configure Message of the day
+  template:
+    src: "motd"
+    dest: "/etc/motd"
+  tags:
+    - baseos
+    - motd
+
+- name: Test if python binary or link exists
+  command: "which python3"
+  ignore_errors: yes
+  register: python_installed
+  changed_when: False
+  tags:
+    - baseos
+    - python
+  
+#- name: Update alternatives for python
+#  command: update-alternatives --install /usr/bin/python python {{ discovered_interpreter_python }} 1
+#  when: python_installed.rc != 0
+#  tags:
+#    - baseos
+#    - python
+
+- name: Update list of packages
+  apt:
+    update_cache: yes
+  tags:
+    - baseos
+    - packages
+    - update_packages
+
+# - name: Remove not needed packages
+#   apt:
+#     name: "{{ item }}"
+#     state: absent
+#     purge: yes
+#     update_cache: no
+#   with_items:
+# # - debian-faq
+# # - geoip-database
+# # - iamerican
+# # - ienglish-common
+# # - installation-report
+# # - powermgmt-base
+# # - reportbug
+# # - telnet
+# # - usb.ids
+# # - wamerican
+# # - xauth
+# # - xkb-data
+# # - net-tools
+#     - acpi
+#     - acpid
+#     - at
+#     - aspell
+#     - aspell-en
+#     - avahi-daemon
+#     - bash-completion
+#     - bc
+#     - bin86
+#     - bind9-host
+#     - console-common
+#     - console-data
+#     - console-tools
+#     - dc
+#     - debian-faq
+#     - debian-faq-de
+#     - debian-faq-fr
+#     - debian-faq-it
+#     - debian-faq-zh-cn
+#     - dhcp
+#     - dhcp3-client
+#     - dhcp3-common
+#     - dictionaries
+#     - dnsutils
+#     - doc-debian
+#     - doc-linux-text
+#     - eject
+#     - fdutils
+#     - file
+#     - finger
+#     - foomatic-filters
+#     - groff
+#     - gnupg
+#     - gnu-efi
+#     - hplip
+#     - iamerican
+#     - ibritish
+#     - info
+#     - ispell
+#     - laptop-detect
+#     - libavahi-compat-libdnssd1
+#     - libc6-amd64
+#     - libc6-i686
+#     - libgpmg1
+#     - manpages
+#     - mtools
+#     - mtr-tiny
+#     - mutt
+#     - nano
+#     - netcat
+#     - ncurses-term
+#     - openssh-client
+#     - openssh-server
+#     - openssl #???
+#     - pidentd
+#     - ppp
+#     - pppconfig
+#     - pppoe
+#     - pppoeconf
+#     - read-edid
+#     - reportbug
+#     - smclient
+#     - tasksel
+#     - tcsh
+#     - traceroute
+#     - unzip
+#     - usbutils
+#     - vim-common
+#     - vim-tiny
+#     - wamerican
+#     - w3m
+#     - whois
+#     - zeroinstall-injector
+#     - zip
+#   tags:
+#     - baseos
+#     - packages
+#     - del_packages
+
+- name: Install basic packages
+  apt:
+    name: "{{item}}"
+    state: latest
+    update_cache: no
+  with_items:
+#     - vim
+    - tcpdump
+    - ssh
+    - sudo
+    - nano
+    - wget
+    - net-tools
+    - ntp
+  tags:
+    - baseos
+    - add_packages
+    - packages
+    - add_packages
