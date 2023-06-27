@@ -79,6 +79,7 @@
     - sudo
     - nano
     - wget
+    - curl
     - net-tools
     - ntp
   tags:
