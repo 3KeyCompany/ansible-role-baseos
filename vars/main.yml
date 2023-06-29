@@ -1,2 +1,5 @@
 ---
 # vars file for os_debian
+
+resource_groups:
+  - baseos
