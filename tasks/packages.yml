@@ -1,0 +1,47 @@
+
+# - name: Test if python binary or link exists
+#   command: "which python3"
+#   ignore_errors: yes
+#   register: python_installed
+#   changed_when: False
+#   tags:
+#     - baseos
+#     - python
+  
+#- name: Update alternatives for python
+#  command: update-alternatives --install /usr/bin/python python {{ discovered_interpreter_python }} 1
+#  when: python_installed.rc != 0
+#  tags:
+#    - baseos
+#    - python
+
+- name: Update list of packages
+  apt:
+    update_cache: yes
+  tags:
+    - baseos
+    - packages
+    - update_packages
+
+- name: Install basic packages
+  apt:
+    name: "{{item}}"
+    state: latest
+    update_cache: no
+  with_items:
+    - vim
+    - tcpdump
+    - ssh
+    - sudo
+    - nano
+    - wget
+    - curl
+    - net-tools
+    - ntp
+  tags:
+    - baseos
+    - baseos_packages
+    - baseos_add_packages
+    - packages
+    - add_packages
+

@@ -1,0 +1,106 @@
+# ############################################################################ #
+#                                  Users                                       #
+# ############################################################################ #
+
+### Set variables
+
+- name: Get user roles of this ansile role
+  set_fact:
+    role_groups: "{{ item.members }}"
+  with_items: "{{ resource_groups_user_roles | selectattr('name','equalto',ansible_role_name) }}"
+  tags:
+    - baseos
+    - baseos_users
+    - baseos_users_getuserroles
+
+- name: Init role users list
+  set_fact:
+    all_role_users: []
+
+- name: Get all users from all found user roles
+  set_fact:
+    all_role_users: "{{ all_role_users + item.members }}"
+  with_items: "{{ user_roles | selectattr('name','in', role_groups) }}"
+  tags:
+    - baseos
+    - baseos_users
+    - baseos_users_getusers
+
+- name: Get members of syadmin group
+  set_fact:
+    sudo_members: "{{ item.members }}"
+  with_items: "{{ user_roles | selectattr('name','equalto','sysadmin') }}"
+  tags:
+    - baseos
+    - baseos_users
+    - baseos_users_groups 
+    - baseos_users_groups_sudo
+
+### Create and delete users + set their authentication data
+### TODO define state in users attributes and set it here
+
+- name: Create system users
+  user:
+    name: "{{ item.name }}"
+    password: "{{ item.password }}"
+    comment: "{{ item.full_name }}"
+    shell: "{{ item.shell }}"
+    state: present
+    update_password: "{{ item.update_password | default('on_create') }}"
+  with_items: "{{ users_list | selectattr('name','in',all_role_users) }}"
+  tags:
+    - baseos
+    - baseos_users
+    - baseos_users_create
+
+# TODO delete users (add state attribute to u users_list)
+
+- name: Add ssh public keys to users
+  authorized_key:
+    user: "{{ item.name }}"
+    path: "/home/{{ item.name }}/.ssh/authorized_keys"
+    state: present
+    key: "{{ item.ssh_public_key | join('\n') }}"
+  when: item.ssh_public_key is defined
+  with_items: "{{ users_list | selectattr('name','in',all_role_users) }}"
+  tags:
+    - users
+    - baseos_users
+    - baseos_users_sshkey
+
+### Create groups
+- name: Ensure privileged group exists
+  ansible.builtin.group:
+    name: privileged_group_name
+    state: present
+  tags:
+    - baseos
+    - baseos_users
+    - baseos_users_groups 
+    - baseos_users_groups_add
+
+### Assign users to groups
+- name: Add sysadmins to sudo
+  ansible.builtin.user:
+    name: "{{ item }}"
+    groups: "{{ privileged_group_name }}"
+    append: yes
+  with_items: "{{ sudo_members }}"
+  tags:
+    - baseos
+    - baseos_users
+    - baseos_users_groups 
+    - baseos_users_groups_sudo
+
+- name: In case of Debian, add sysadmins to adm group
+  ansible.builtin.user:
+    name: "{{ item }}"
+    groups: adm
+    append: yes
+  with_items: "{{ sudo_members }}"
+  when: ansible_facts['os_family'] == "Debian"
+  tags:
+    - baseos
+    - baseos_users
+    - baseos_users_groups 
+    - baseos_users_groups_adm

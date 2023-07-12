@@ -1,0 +1,7 @@
+# - name: Configure Message of the day
+#   template:
+#     src: "motd"
+#     dest: "/etc/motd"
+#   tags:
+#     - baseos
+#     - motd
