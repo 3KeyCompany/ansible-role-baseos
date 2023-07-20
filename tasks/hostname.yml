@@ -1,35 +1,35 @@
-# tasks file for os_debian
+#tasks file for setting hostname
 
-# - name: Get hostname from inventory hostname
-#   set_fact:
-#     ansible_hostname: "{{ inventory_hostname.split('.')[0] }}"
-#   tags:
-#     - baseos
-#     - hosts
+- name: Get hostname from inventory hostname
+  set_fact:
+    ansible_hostname: "{{ inventory_hostname.split('.')[0] }}"
+  tags:
+    - baseos
+    - hosts
 
-# - name: Get domain name from inventory hostname
-#   set_fact:
-#     ansible_domain: '{{ inventory_hostname | regex_replace("^[^.]+.", "")  }}'
-#   tags:
-#     - baseos
-#     - hosts
+- name: Get domain name from inventory hostname
+  set_fact:
+    ansible_domain: '{{ inventory_hostname | regex_replace("^[^.]+.", "")  }}'
+  tags:
+    - baseos
+    - hosts
 
-# - name: Set hostname
-#   shell: hostname "{{ ansible_hostname }}"
-#   tags:
-#     - baseos
-#     - hostname
+- name: Set hostname
+  shell: hostname "{{ ansible_hostname }}"
+  tags:
+    - baseos
+    - hostname
 
-# - name: Set hostname file
-#   shell: echo "{{ ansible_hostname }}" > /etc/hostname
-#   tags:
-#     - baseos
-#     - hostname
+- name: Set hostname file
+  shell: echo "{{ ansible_hostname }}" > /etc/hostname
+  tags:
+    - baseos
+    - hostname
 
-# - name: Update /etc/hosts
-#   template:
-#     src: "hosts.j2"
-#     dest: "/etc/hosts"
-#   tags:
-#     - baseos
-#     - hosts
+- name: Update /etc/hosts
+  template:
+    src: "hosts.j2"
+    dest: "/etc/hosts"
+  tags:
+    - baseos
+    - hosts
