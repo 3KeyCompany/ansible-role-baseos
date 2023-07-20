@@ -20,13 +20,20 @@
     update_cache: yes
   tags:
     - baseos
+    - baseos_packages
     - packages
     - update_packages
 
 - name: Include list of packages to install
   ansible.builtin.include_vars:
     dir: vars
-    file: "papckages-{{ansible_facts['os_family']}}.yaml"
+    file: "packages-{{ansible_facts['os_family']}}.yml"
+  tags:
+    - baseos
+    - baseos_packages
+    - baseos_setlist
+    - packages
+    - add_packages
 
 - name: Install basic packages
   apt:
