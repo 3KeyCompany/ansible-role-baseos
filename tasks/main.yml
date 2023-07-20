@@ -4,9 +4,9 @@
   ansible.builtin.include_tasks:
     file: "{{ role_task }}"
   loop:
-#    - hostname.yml
-#    - packages.yml
-#    - branding.yml
+    - hostname.yml
+    - packages.yml
+    - branding.yml
     - users.yml
   loop_control:
     loop_var: role_task 

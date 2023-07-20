@@ -1,7 +1,8 @@
-# - name: Configure Message of the day
-#   template:
-#     src: "motd"
-#     dest: "/etc/motd"
-#   tags:
-#     - baseos
-#     - motd
+# TODO - diffewrentiate between 3Key and CZERTAINLY
+- name: Configure Message of the day
+  template:
+    src: "motd"
+    dest: "/etc/motd"
+  tags:
+    - baseos
+    - motd

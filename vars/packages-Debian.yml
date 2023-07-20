@@ -1,0 +1,11 @@
+install_packages:
+    - vim
+    - tcpdump
+    - ssh
+    - sudo
+    - nano
+    - wget
+    - curl
+    - net-tools
+    - ntp
+    - ntpdate

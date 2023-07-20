@@ -1,0 +1,13 @@
+install_packages:
+  - vim-minimal
+  - tcpdump
+  - openssh-server
+  - openssh
+  - openssh-clients
+  - sudo
+  - nano
+  - wget
+  - curl
+  - net-tools
+  - ntp
+  - ntpdate
