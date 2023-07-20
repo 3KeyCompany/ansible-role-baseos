@@ -27,7 +27,7 @@
 - name: Include list of packages to install
   ansible.builtin.include_vars:
     dir: vars
-    file: "packages-{{ansible_facts['os_family']}}.yml"
+    files_matching: "packages-{{ansible_facts['os_family']}}.yml"
   tags:
     - baseos
     - baseos_packages
